@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Recruiter Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+    margin:0;
+    font-family:Segoe UI;
+    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:white;
+}
+
+/* NAVBAR */
+.navbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px 40px;
+    background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(10px);
+}
+
+.navbar h2{
+    margin:0;
+}
+
+.logout{
+    color:#00c6ff;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+/* HERO */
+.hero{
+    text-align:center;
+    margin-top:60px;
+}
+
+.hero h1{
+    font-size:42px;
+}
+
+.hero p{
+    color:#ccc;
+    margin:15px 0;
+    font-size:16px;
+}
+
+/* BUTTON */
+.hero button{
+    padding:15px 35px;
+    font-size:18px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(45deg,#00c6ff,#0072ff);
+    color:white;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.hero button:hover{
+    transform:scale(1.1);
+}
+
+/* INFO SECTION */
+.info-box{
+    margin:60px auto;
+    max-width:1200px;
+    text-align:center;
+    padding:0 20px;
+}
+
+.info-box h2{
+    margin-bottom:30px;
+    color:#00c6ff;
+}
+
+/* GRID */
+.features{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:20px;
+}
+
+/* CARDS */
+.card{
+    padding:20px;
+    border-radius:12px;
+    background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(8px);
+    transition:0.3s;
+    font-size:15px;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+    background:rgba(255,255,255,0.1);
+}
+
+/* FOOTER */
+.footer{
+    text-align:center;
+    margin:40px 0;
+    color:#00c6ff;
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <h2>Recruiter Panel</h2>
+    <a href="/" class="logout">Logout</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+    <h1>Welcome Recruiter</h1>
+    <p>Discover and evaluate candidate portfolios efficiently</p>
+
+    <button onclick="explore()">Explore Portfolios</button>
+</div>
+
+<!-- INFO -->
+<div class="info-box">
+    <h2>Why Use This Platform?</h2>
+
+    <div class="features">
+        <div class="card">📁 View professionally generated portfolios</div>
+        <div class="card">📊 Analyze candidate skills and projects</div>
+        <div class="card">📄 Access resumes instantly</div>
+        <div class="card">⚡ Save time in recruitment process</div>
+        <div class="card">🎯 Find suitable candidates quickly</div>
+    </div>
+</div>
+
+
+<!-- SCRIPT -->
+<script>
+function explore(){
+    window.location.href = "/explore"; // change if needed
+}
+</script>
+
+</body>
+</html>

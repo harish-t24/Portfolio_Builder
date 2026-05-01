@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Select Role</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+    margin:0;
+    font-family:Segoe UI;
+    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:white;
+    text-align:center;
+}
+
+/* HEADER */
+.header{
+    margin-top:80px;
+}
+
+.header h1{
+    font-size:42px;
+}
+
+.header p{
+    color:#ccc;
+    margin-top:10px;
+}
+
+/* ROLE CARDS */
+.container{
+    display:flex;
+    justify-content:center;
+    gap:30px;
+    margin-top:60px;
+    flex-wrap:wrap;
+}
+
+.card{
+    width:220px;
+    padding:25px;
+    border-radius:15px;
+    background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(10px);
+    transition:0.3s;
+    cursor:pointer;
+}
+
+.card:hover{
+    transform:translateY(-10px) scale(1.05);
+    background:rgba(255,255,255,0.1);
+}
+
+/* ICON */
+.icon{
+    font-size:40px;
+    margin-bottom:15px;
+}
+
+/* TITLE */
+.card h3{
+    margin:10px 0;
+}
+
+/* TEXT */
+.card p{
+    font-size:14px;
+    color:#ccc;
+}
+
+/* COLORS */
+.user{ border-top:4px solid #4CAF50; }
+.admin{ border-top:4px solid #FF5722; }
+.recruiter{ border-top:4px solid #00c6ff; }
+
+
+</style>
+
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <h1>Select Your Role</h1>
+    <p>Choose how you want to continue in the AI Portfolio Builder system</p>
+</div>
+
+<!-- ROLES -->
+<div class="container">
+
+    <div class="card user" onclick="goUser()">
+        <div class="icon">👤</div>
+        <h3>User</h3>
+        <p>Create and manage your personal portfolio with AI assistance.</p>
+    </div>
+
+    <div class="card admin" onclick="goAdmin()">
+        <div class="icon">⚙️</div>
+        <h3>Admin</h3>
+        <p>Manage users, portfolios, and system analytics dashboard.</p>
+    </div>
+
+    <div class="card recruiter" onclick="goRecruiter()">
+        <div class="icon">💼</div>
+        <h3>Recruiter</h3>
+        <p>Explore candidate portfolios and find the best talent quickly.</p>
+    </div>
+
+</div>
+
+<script>
+function goUser(){
+    window.location.href = "/login";
+}
+
+function goAdmin(){
+    window.location.href = "/admin";
+}
+
+function goRecruiter(){
+    window.location.href = "/recruiter";
+}
+</script>
+
+</body>
+</html>

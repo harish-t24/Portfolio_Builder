@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Recruiter Register</title>
+<style>
+body{
+    background:#0f2027;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+/* CARD */
+.container{
+    width:400px;
+    max-width:90%;
+    background:#1e1e2f;
+    padding:40px;
+    border-radius:20px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.6);
+    text-align:center;
+    animation:fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(30px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+/* INPUTS */
+input{
+    width:90%;
+    padding:12px;
+    margin:12px 0;
+    border:none;
+    border-radius:8px;
+    background:#2c2c44;
+    color:white;
+}
+
+input:focus{
+    outline:none;
+    box-shadow:0 0 8px #00c6ff;
+}
+button{
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    border:none;
+    border-radius:8px;
+    background:linear-gradient(45deg,#00c6ff,#0072ff);
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h2>Recruiter Register</h2>
+<form method="POST">
+<input name="username" placeholder="Username" required>
+<input name="email" placeholder="Email" required>
+<input type="password" name="password" placeholder="Password" required>
+<button>Register</button>
+</form>
+
+<p>Already recruiter? <a href="/recruiter/login">Login</a></p>
+</div>
+
+</body>
+</html>

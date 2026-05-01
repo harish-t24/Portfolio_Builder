@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Segoe UI;
+}
+
+body{
+    background:linear-gradient(-45deg,#0f2027,#203a43,#2c5364,#1c1c3c);
+    background-size:400% 400%;
+    animation:gradientMove 12s ease infinite;
+    min-height:100vh;
+    padding:30px;
+    color:white;
+}
+
+@keyframes gradientMove{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+/* HEADER */
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+}
+
+.actions a{
+    padding:10px 18px;
+    margin-left:10px;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+.clear-btn{
+    background:linear-gradient(45deg,#ff416c,#ff4b2b);
+    color:white;
+}
+
+.logout-btn{
+    background:#111;
+    color:white;
+}
+
+.actions a:hover{
+    transform:scale(1.1);
+}
+
+/* STATS */
+.stats{
+    display:flex;
+    gap:20px;
+    margin-bottom:30px;
+}
+
+.stat-card{
+    flex:1;
+    background:rgba(30,30,47,0.85);
+    padding:20px;
+    border-radius:15px;
+    text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,0.6);
+    transition:0.4s;
+}
+
+.stat-card:hover{
+    transform:translateY(-10px);
+}
+
+.stat-number{
+    font-size:32px;
+    font-weight:bold;
+    margin-top:10px;
+    color:#00c6ff;
+}
+
+/* CARD */
+.card{
+    background:rgba(30,30,47,0.9);
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 15px 40px rgba(0,0,0,0.5);
+    margin-bottom:30px;
+}
+
+/* TABLE */
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+th,td{
+    padding:10px;
+}
+
+th{
+    background:#2c2c44;
+}
+
+tr:nth-child(even){
+    background:#26263a;
+}
+
+tr:hover{
+    background:#303050;
+}
+
+.delete-btn{
+    background:linear-gradient(45deg,#ff416c,#ff4b2b);
+    padding:6px 12px;
+    border-radius:6px;
+    text-decoration:none;
+    color:white;
+    font-size:13px;
+    transition:0.3s;
+}
+
+.delete-btn:hover{
+    transform:scale(1.1);
+}
+
+.table-wrapper{
+    overflow-x:auto;
+}
+
+input{
+    padding:8px;
+    width:250px;
+    border-radius:6px;
+    border:none;
+    margin-top:10px;
+}
+.chart-wrapper{
+    width:300px;   
+    height:300px;
+    margin:20px auto; 
+}
+/* EXPLORE BUTTON LIKE CARD */
+.explore-container{
+    margin-top:20px;
+}
+
+.explore-card{
+    display:block;
+    width:100%;
+    background:rgba(30,30,47,0.85);
+    padding:20px;
+    border-radius:15px;
+    text-align:center;
+    text-decoration:none;
+    font-size:18px;
+    font-weight:bold;
+    color:white;
+    box-shadow:0 10px 30px rgba(0,0,0,0.6);
+    transition:0.4s;
+}
+
+.explore-card:hover{
+    transform:translateY(-8px);
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>🚀 Admin Dashboard</h1>
+    <div class="actions">
+        <a href="/admin/clear_users" class="clear-btn">Clear Users</a>
+        <a href="/admin/clear_portfolios" class="clear-btn">Clear Portfolios</a>
+        <a href="/admin/logout" class="logout-btn">Logout</a>
+    </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+    <div class="stat-card">
+        <h3>Total Users</h3>
+        <div class="stat-number" id="userCount">0</div>
+    </div>
+    <div class="stat-card">
+        <h3>Total Portfolios</h3>
+        <div class="stat-number" id="portfolioCount">0</div>
+    </div>
+</div>
+<div class="explore-container">
+    <a href="/explore" class="explore-card">Explore Portfolios</a>
+</div>
+<br>
+
+<!-- CHART -->
+<div class="card">
+    <h2>Statistics Overview</h2>
+    <div class="chart-wrapper">
+    <canvas id="statsChart"></canvas>
+</div>
+</div>
+
+<!-- USERS -->
+<div class="card">
+    <h2>Registered Users</h2>
+    <input type="text" id="searchInput" placeholder="Search users...">
+    <div class="table-wrapper">
+        <table id="userTable">
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Action</th>
+            </tr>
+            {{users}}
+        </table>
+    </div>
+</div>
+
+<!-- PORTFOLIOS -->
+<div class="card">
+    <h2>Portfolios</h2>
+    <div class="table-wrapper">
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Link</th>
+            </tr>
+            {{portfolios}}
+        </table>
+    </div>
+</div>
+
+<script>
+/* Animated Counter */
+function animateValue(id, start, end, duration) {
+    let range = end - start;
+    let current = start;
+    let increment = end > start ? 1 : -1;
+    let stepTime = Math.abs(Math.floor(duration / range));
+    let obj = document.getElementById(id);
+
+    let timer = setInterval(function() {
+        current += increment;
+        obj.textContent = current;
+        if (current == end) clearInterval(timer);
+    }, stepTime);
+}
+
+animateValue("userCount", 0, {{user_count}}, 1500);
+animateValue("portfolioCount", 0, {{portfolio_count}}, 1500);
+
+/* Chart */
+new Chart(document.getElementById('statsChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Users', 'Portfolios'],
+        datasets: [{
+            data: [{{user_count}}, {{portfolio_count}}],
+            backgroundColor: ['#00c6ff', '#0072ff']
+        }]
+    },
+    options: {
+        plugins:{ legend:{ labels:{color:'white'} } }
+    }
+});
+
+/* Live Search */
+document.getElementById("searchInput").addEventListener("keyup", function() {
+    let filter = this.value.toLowerCase();
+    let rows = document.querySelectorAll("#userTable tr");
+
+    rows.forEach((row, index) => {
+        if(index === 0) return;
+        row.style.display = row.innerText.toLowerCase().includes(filter) ? "" : "none";
+    });
+});
+</script>
+
+</body>
+</html>

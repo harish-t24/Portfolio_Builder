@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Segoe UI;
+}
+
+body{
+    display:flex;
+    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:white;
+    height:100vh;
+}
+
+/* SIDEBAR */
+.sidebar{
+    width:260px;
+    background:rgba(30,30,47,0.9);
+    backdrop-filter:blur(15px);
+    padding:25px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.profile img{
+    width:120px;
+    border-radius:50%;
+    border:3px solid #00c6ff;
+}
+
+.menu button, .menu a{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    border:none;
+    border-radius:8px;
+    background:#2c2c44;
+    color:white;
+    cursor:pointer;
+    text-decoration:none;
+}
+
+.menu button:hover, .menu a:hover{
+    background:#00c6ff;
+}
+
+/* CONTENT */
+.content{
+    flex:1;
+    padding:30px;
+    overflow:auto;
+}
+
+.section{
+    display:none;
+    background:rgba(255,255,255,0.05);
+    padding:20px;
+    border-radius:12px;
+    margin-bottom:20px;
+}
+
+/* FLOAT BUTTONS */
+..ai-btn,
+.edit-btn,
+.drag-btn,
+.ai-layout-btn,
+.reset-btn{
+    box-shadow:0 8px 20px rgba(0,0,0,0.5);
+}
+/* FLOATING BUTTONS POSITION FIX */
+.ai-btn{
+    position:fixed;
+    bottom:20px;
+    right:30px;
+    width:60px;
+    height:60px;
+    background:#ff4081;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:26px;
+    cursor:pointer;
+    z-index:1000;
+}
+
+.edit-btn{
+    position:fixed;
+    bottom:20px;
+    right:170px;
+    background:#00c853;
+    color:white;
+    padding:12px;
+    border-radius:50%;
+    cursor:pointer;
+    z-index:1000;
+}
+
+.ai-layout-btn{
+    position:fixed;
+    bottom:20px;
+    right:100px;
+    width:60px;
+    height:60px;
+    background:#9c27b0;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:26px;
+    cursor:pointer;
+    z-index:1000;
+}
+
+.reset-btn{
+    position:fixed;
+    bottom:20px;
+    right:360px;
+    width:60px;
+    height:60px;
+    background:#ff5722;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:26px;
+    cursor:pointer;
+    z-index:1000;
+}
+.chat-btn{
+    position:fixed;
+    bottom:20px;
+    right:100px;
+    width:60px;
+    height:60px;
+    background:#00c6ff;
+    color:white;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:26px;
+    cursor:pointer;
+    box-shadow:0 8px 20px rgba(0,0,0,0.5);
+}
+
+.chat-box{
+    position:fixed;
+    bottom:90px;
+    right:30px;
+    width:320px;
+    height:400px;
+    background:#1e1e2f;
+    border-radius:15px;
+    display:none;
+    flex-direction:column;
+    box-shadow:0 20px 60px rgba(0,0,0,0.6);
+    overflow:hidden;
+}
+
+.chat-header{
+    background:#00c6ff;
+    padding:10px;
+    font-weight:bold;
+    display:flex;
+    justify-content:space-between;
+}
+
+.chat-body{
+    flex:1;
+    padding:10px;
+    overflow-y:auto;
+    font-size:14px;
+}
+
+.bot-msg{
+    background:#2c2c44;
+    padding:8px;
+    border-radius:8px;
+    margin-bottom:8px;
+}
+
+.user-msg{
+    background:#0072ff;
+    padding:8px;
+    border-radius:8px;
+    margin-bottom:8px;
+    text-align:right;
+}
+
+.chat-input{
+    display:flex;
+}
+
+.chat-input input{
+    flex:1;
+    padding:8px;
+    border:none;
+    outline:none;
+}
+
+.chat-input button{
+    padding:8px 12px;
+    border:none;
+    background:#00c6ff;
+    color:white;
+    cursor:pointer;
+}
+/* EDIT PANEL FIX */
+.editor{
+    position:fixed;
+    bottom:100px;
+    right:30px;
+    width:280px;
+    background:rgba(30,30,47,0.95);
+    backdrop-filter:blur(10px);
+    padding:18px;
+    border-radius:15px;
+    display:none;
+    z-index:2000;
+    box-shadow:0 15px 40px rgba(0,0,0,0.6);
+    color:white;
+    animation:fadeUp 0.4s ease;
+}
+
+.editor h3{
+    margin-bottom:10px;
+}
+
+.editor button,
+.editor input{
+    width:100%;
+    margin-top:8px;
+    padding:8px;
+    border:none;
+    border-radius:8px;
+}
+
+.editor button{
+    background:linear-gradient(45deg,#00c6ff,#0072ff);
+    color:white;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+
+    <div class="profile">
+        <img src="/uploads/{{image}}">
+        <h2>{{name}}</h2>
+        <p>{{domain}}</p>
+    </div>
+
+    <div class="menu">
+        <button onclick="showSection('about')">About</button>
+        <button onclick="showSection('skills')">Skills</button>
+        <button onclick="showSection('projects')">Projects</button>
+        <button onclick="showSection('education')">Education</button>
+        <button onclick="showSection('resume')">Resume</button>
+        <button onclick="showSection('contact')">Contact</button><br><br>
+        <a href="#" onclick="downloadWithStyle()">Download Source</a><br><br><br>
+        <a href="/logout">Logout</a>
+    </div>
+
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+<div class="hero" id="hero">
+    <div class="hero-text">
+        <h2>Welcome to My Portfolio</h2>
+        <h1>{{name}}</h1>
+        <h3>{{domain}}</h3>
+
+        <p>
+            Welcome to my portfolio website. Here you'll find my skills,
+            education, resume, and how to contact me.
+        </p>
+    </div>
+</div>
+<div id="about" class="section">
+<h2>About</h2>
+<p>{{about}}</p>
+</div>
+
+<div id="skills" class="section">
+<h2>Skills</h2>
+<p>{{skills}}</p>
+</div>
+
+<div id="projects" class="section">
+<h2>Projects</h2>
+<p>{{projects}}</p>
+</div>
+
+<div id="education" class="section">
+<h2>Education</h2>
+<p>{{college_name}} - {{CGPA}}</p>
+</div>
+
+<div id="resume" class="section">
+<h2>Resume</h2>
+<iframe src="/resumes/{{resume}}" width="100%" height="300"></iframe>
+<a href="/resumes/{{resume}}" download>Download Resume</a>
+</div>
+
+<div id="contact" class="section">
+<h2>Contact</h2>
+        <a href="{{email}}" target="_blank" style="color: #00c6ff;">{{email}}</a><br><br>
+        <a href="{{github_url}}" target="_blank" style="color: #00c6ff;">{{github_url}}</a><br><br>
+        <a href="{{linkedin_url}}" target="_blank" style="color: #00c6ff;">{{linkedin_url}}</a>
+</div>
+
+</div>
+
+<script>
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+        document.getElementById(id).style.display = 'block';
+    }
+    showSection('home');
+</script>
+
+<div class="ai-btn" onclick="runAI()">🤖</div>
+<script>
+function runAI(){
+
+    const choice = prompt(
+        "AI OPTIONS:\n1 - Generate About\n2 - Generate Skills"
+    );
+
+    // 👉 ABOUT
+    if(choice === "1"){
+        fetch("/ai_about")
+        .then(res => res.text())
+        .then(text => {
+            document.getElementById("home").innerHTML =
+                "<h3>About Me (AI Generated)</h3><p>" + text + "</p>";
+
+            showSection("home");
+        });
+    }
+
+    // 👉 SKILLS
+    else if(choice === "2"){
+        fetch("/ai_skills")
+        .then(res => res.text())
+        .then(text => {
+            document.getElementById("skills").innerHTML =
+                "<h3>Skills (AI Generated)</h3><p>" + text + "</p>";
+
+            showSection("skills");
+        });
+    }
+
+    else{
+        alert("Invalid option ❌");
+    }
+}
+</script>
+<script>
+function generateSkills(){
+    fetch("/ai_skills")
+    .then(res => res.text())
+    .then(text => {
+        document.getElementById("skills").innerHTML =
+            "<h3>Skills (AI Generated)</h3><p>" + text + "</p>";
+
+        showSection("skills");
+    })
+    .catch(err => {
+        alert("AI Skills not working ❌");
+        console.log(err);
+    });
+}
+</script>
+<!-- EDIT BUTTON -->
+<div class="edit-btn" onclick="toggleEditor()">✏️ Edit</div>
+<!-- EDIT PANEL -->
+<div id="editor" class="editor">
+    <h3>Edit Portfolio</h3>
+
+    <label>Image Shape</label>
+    <button onclick="setImageShape('50%')">Circle</button>
+    <button onclick="setImageShape('0')">Square</button>
+    <button onclick="setImageShape('10px')">Rectangle</button>
+
+    <label>Background Color</label>
+    <input type="color" onchange="setBgColor(this.value)">
+
+    <button onclick="toggleEditor()">Close</button>
+</div>
+<script>
+function toggleEditor(){
+    const editor = document.getElementById("editor");
+    editor.style.display = editor.style.display === "block" ? "none" : "block";
+}
+
+function setImageShape(radius){
+    document.querySelector(".hero-img img").style.borderRadius = radius;
+    localStorage.setItem("imgRadius", radius);
+}
+
+function setBgColor(color){
+    document.body.style.background = color;
+    localStorage.setItem("bgColor",  color);
+}
+<script>
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+        document.getElementById(id).style.display = 'block';
+    }
+    showSection('home');
+</script>
+
+<div class="ai-btn" onclick="runAI()">🤖</div>
+<script>
+function runAI(){
+
+    const choice = prompt(
+        "AI OPTIONS:\n1 - Generate About\n2 - Generate Skills"
+    );
+
+    // 👉 ABOUT
+    if(choice === "1"){
+        fetch("/ai_about")
+        .then(res => res.text())
+        .then(text => {
+            document.getElementById("home").innerHTML =
+                "<h3>About Me (AI Generated)</h3><p>" + text + "</p>";
+
+            showSection("home");
+        });
+    }
+
+    // 👉 SKILLS
+    else if(choice === "2"){
+        fetch("/ai_skills")
+        .then(res => res.text())
+        .then(text => {
+            document.getElementById("skills").innerHTML =
+                "<h3>Skills (AI Generated)</h3><p>" + text + "</p>";
+
+            showSection("skills");
+        });
+    }
+
+    else{
+        alert("Invalid option ❌");
+    }
+}
+</script>
+<script>
+function generateSkills(){
+    fetch("/ai_skills")
+    .then(res => res.text())
+    .then(text => {
+        document.getElementById("skills").innerHTML =
+            "<h3>Skills (AI Generated)</h3><p>" + text + "</p>";
+
+        showSection("skills");
+    })
+    .catch(err => {
+        alert("AI Skills not working ❌");
+        console.log(err);
+    });
+}
+</script>
+<!-- EDIT BUTTON -->
+<div class="edit-btn" onclick="toggleEditor()">✏️ Edit</div>
+<!-- EDIT PANEL -->
+<div id="editor" class="editor">
+    <h3>Edit Portfolio</h3>
+
+    <label>Image Shape</label>
+    <button onclick="setImageShape('50%')">Circle</button>
+    <button onclick="setImageShape('0')">Square</button>
+    <button onclick="setImageShape('10px')">Rectangle</button>
+
+    <label>Background Color</label>
+    <input type="color" onchange="setBgColor(this.value)">
+
+    <button onclick="toggleEditor()">Close</button>
+</div>
+<script>
+function toggleEditor(){
+    const editor = document.getElementById("editor");
+    editor.style.display = editor.style.display === "block" ? "none" : "block";
+}
+
+function setImageShape(radius){
+    document.querySelector(".hero-img img").style.borderRadius = radius;
+    localStorage.setItem("imgRadius", radius);
+}
+
+function setBgColor(color){
+    document.body.style.background = color;
+    localStorage.setItem("bgColor",  color);
+}
+
+function downloadWithStyle(){
+    const bg = localStorage.getItem("bgColor") || "";
+    const radius = localStorage.getItem("imgRadius") || "";
+    fetch('/save_style?bg=${encodeURIComponent(bg)}&radius=${encodeURIComponent(radius)}').then(()=>{
+        window.location.href="/download_source";
+    });
+}
+</script>
+
+<script>
+window.onload=funtion(){
+    const bg = localStorage.getItem("bgColor");
+    const radius = localStorage.getItem("imgradius");
+    if(bg){
+        document.body.style.background=bg;
+    }
+    if(radius){
+        document.querySelector(".hero-img img").style.borderRadius=radius;
+    }
+}
+function sendStyles(){
+    const bg = localStorage.getItem("bgColor") ||  "";
+    const radius = localStorage.getItem("imgRadius") ||  "";
+    fetch('/save_style?bg=${bg} &radius=${radius}');
+}
+</script>
+
+<!-- CHATBOT BUTTON -->
+<div class="chat-btn" onclick="toggleChat()">💬</div>
+
+<!-- CHAT WINDOW -->
+<div class="chat-box" id="chatBox">
+    <div class="chat-header">
+        AI Assistant
+        <span onclick="toggleChat()" style="cursor:pointer;">✖</span>
+    </div>
+    <div class="chat-body" id="chatBody">
+        <div class="bot-msg">Hi 👋 I can help you improve your portfolio.</div>
+    </div>
+    <div class="chat-input">
+        <input type="text" id="chatInput" placeholder="Ask something...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+<script>
+function toggleChat(){
+    const box = document.getElementById("chatBox");
+    box.style.display = box.style.display === "flex" ? "none" : "flex";
+}
+
+function sendMessage(){
+    const input = document.getElementById("chatInput");
+    const message = input.value.trim();
+    if(!message) return;
+
+    const body = document.getElementById("chatBody");
+
+    body.innerHTML += `<div class="user-msg">${message}</div>`;
+
+    input.value = "";
+
+    if(message.toLowerCase().includes("about")){
+        fetch("/ai_about")
+        .then(res=>res.text())
+        .then(text=>{
+            body.innerHTML += `<div class="bot-msg">${text}</div>`;
+            body.scrollTop = body.scrollHeight;
+        });
+    }
+    else if(message.toLowerCase().includes("skills")){
+         fetch("/ai_skills")
+        .then(res=>res.text())
+        .then(text=>{
+            body.innerHTML += `<div class="bot-msg">${text}</div>`;
+            body.scrollTop = body.scrollHeight;
+        });
+    }
+    else{
+        body.innerHTML += `<div class="bot-msg">I can generate About, skills.</div>`;
+    }
+
+    body.scrollTop = body.scrollHeight;
+}
+
+function showSection(id){
+    // hide all sections
+    document.querySelectorAll('.section')
+        .forEach(s => s.style.display = 'none');
+
+    // show selected section
+    document.getElementById(id).style.display = 'block';
+
+    // 🔥 control hero visibility
+    if(id === "home"){
+        document.getElementById("hero").style.display = "flex";
+    } else {
+        document.getElementById("hero").style.display = "none";
+    }
+}
+
+</script>
+
+<script>
+window.onload=funtion(){
+    const bg = localStorage.getItem("bgColor");
+    const radius = localStorage.getItem("imgradius");
+    if(bg){
+        document.body.style.background=bg;
+    }
+    if(radius){
+        document.querySelector(".hero-img img").style.borderRadius=radius;
+    }
+}
+function sendStyles(){
+    const bg = localStorage.getItem("bgColor") ||  "";
+    const radius = localStorage.getItem("imgRadius") ||  "";
+    fetch('/save_style?bg=${bg} &radius=${radius}');
+}
+</script>
+
+<!-- CHATBOT BUTTON -->
+<div class="chat-btn" onclick="toggleChat()">💬</div>
+
+<!-- CHAT WINDOW -->
+<div class="chat-box" id="chatBox">
+    <div class="chat-header">
+        AI Assistant
+        <span onclick="toggleChat()" style="cursor:pointer;">✖</span>
+    </div>
+    <div class="chat-body" id="chatBody">
+        <div class="bot-msg">Hi 👋 I can help you improve your portfolio.</div>
+    </div>
+    <div class="chat-input">
+        <input type="text" id="chatInput" placeholder="Ask something...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+<script>
+function toggleChat(){
+    const box = document.getElementById("chatBox");
+    box.style.display = box.style.display === "flex" ? "none" : "flex";
+}
+
+function sendMessage(){
+    const input = document.getElementById("chatInput");
+    const message = input.value.trim();
+    if(!message) return;
+
+    const body = document.getElementById("chatBody");
+
+    body.innerHTML += `<div class="user-msg">${message}</div>`;
+
+    input.value = "";
+
+    if(message.toLowerCase().includes("about")){
+        fetch("/ai_about")
+        .then(res=>res.text())
+        .then(text=>{
+            body.innerHTML += `<div class="bot-msg">${text}</div>`;
+            body.scrollTop = body.scrollHeight;
+        });
+    }
+    else if(message.toLowerCase().includes("skills")){
+         fetch("/ai_skills")
+        .then(res=>res.text())
+        .then(text=>{
+            body.innerHTML += `<div class="bot-msg">${text}</div>`;
+            body.scrollTop = body.scrollHeight;
+        });
+    }
+    else{
+        body.innerHTML += `<div class="bot-msg">I can generate About, skills and project description.</div>`;
+    }
+
+    body.scrollTop = body.scrollHeight;
+}
+
+function showSection(id){
+    // hide all sections
+    document.querySelectorAll('.section')
+        .forEach(s => s.style.display = 'none');
+
+    // show selected section
+    document.getElementById(id).style.display = 'block';
+
+    // 🔥 control hero visibility
+    if(id === "home"){
+        document.getElementById("hero").style.display = "flex";
+    } else {
+        document.getElementById("hero").style.display = "none";
+    }
+}
+
+/* DOWNLOAD SOURCE */
+function downloadWithStyle(){
+    const bg = localStorage.getItem("bgColor") || "";
+    const radius = localStorage.getItem("imgRadius") || "";
+
+    fetch(`/save_style?bg=${encodeURIComponent(bg)}&radius=${encodeURIComponent(radius)}`)
+    .then(()=>{
+        window.location.href = "/download_source";
+    });
+}
+</script>
+
+</body>
+</html>
